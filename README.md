@@ -149,3 +149,11 @@ truffle test
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+## Demo Screenshots
+
+### Homepage
+![Homepage](./screenshots/homepage.png)
+
+### Listing a Model
+![Listing a Model](./screenshots/listing-model.png)

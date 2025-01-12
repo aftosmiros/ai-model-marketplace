@@ -139,3 +139,40 @@ module.exports = {
   //   }
   // }
 };
+
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+require('dotenv').config();
+
+module.exports = {
+  networks: {
+    goerli: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.MNEMONIC, // Replace with your mnemonic or private key
+          `https://goerli.infura.io/v3/${process.env.INFURA_PROJECT_ID}` // Infura endpoint
+        ),
+      network_id: 5, // Goerli network ID
+      gas: 5500000, // Gas limit
+      confirmations: 2, // Wait for 2 confirmations
+      timeoutBlocks: 200, // Wait up to 200 blocks
+      skipDryRun: true, // Skip dry run before migrations
+    },
+    sepolia: {
+      provider: () =>
+        new HDWalletProvider(
+          process.env.MNEMONIC,
+          `https://sepolia.infura.io/v3/${process.env.INFURA_PROJECT_ID}`
+        ),
+      network_id: 11155111, // Sepolia network ID
+      gas: 5500000,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+    },
+  },
+  compilers: {
+    solc: {
+      version: "0.8.20", // Match the Solidity version of your contract
+    },
+  },
+};

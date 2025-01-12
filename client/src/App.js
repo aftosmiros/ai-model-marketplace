@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 import "./App.css";
-import contractABI from "./abi.json"; // Скопируйте ABI сюда
+import contractABI from "./abi.json"; 
 
 const contractAddress = "0xa106F7546D53D35766585a9acFfD7f001FCBBc74"; // Адрес вашего контракта
 
@@ -47,14 +47,38 @@ function App() {
     };
 
     const fetchModels = async () => {
-        const modelsCount = await contract.methods.modelsLength().call();
-        const tempModels = [];
-        for (let i = 0; i < modelsCount; i++) {
-            const model = await contract.methods.models(i).call();
-            tempModels.push({ ...model, id: i });
+        if (!contract) {
+            console.error("Contract is not initialized.");
+            alert("Contract is not initialized.");
+            return;
         }
-        setModels(tempModels);
+
+        try {
+            console.log("Fetching models...");
+            const modelCount = await contract.methods.getModelsLength().call();
+            console.log("Model count:", modelCount);
+
+            const tempModels = [];
+            for (let i = 0; i < modelCount; i++) {
+                const model = await contract.methods.models(i).call();
+                console.log(`Model ${i}:`, model);
+                tempModels.push({
+                    id: i,
+                    name: model.name,
+                    description: model.description,
+                    price: model.price,
+                    creator: model.creator
+                });
+            }
+
+            setModels(tempModels);
+            console.log("Fetched models:", tempModels);
+        } catch (error) {
+            console.error("Error fetching models:", error.message, error.stack);
+            alert("Failed to fetch models. See console for details.");
+        }
     };
+
 
     return (
         <div className="App">
