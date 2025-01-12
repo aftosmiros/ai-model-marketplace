@@ -153,7 +153,7 @@ This project is licensed under the MIT License. See the `LICENSE` file for detai
 ## Demo Screenshots
 
 ### Homepage
-![Homepage](./screenshots/homepage.png)
+![Homepage](client/screenshots/homepage.png)
 
 ### Listing a Model
-![Listing a Model](./screenshots/listing-model.png)
+![Listing a Model](client/screenshots/listing-model.png)
