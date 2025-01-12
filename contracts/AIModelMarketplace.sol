@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.20;
 
 contract AIModelMarketplace {
     struct Model {
@@ -17,7 +17,7 @@ contract AIModelMarketplace {
     event ModelListed(uint256 modelId, string name, address creator);
     event ModelPurchased(uint256 modelId, address buyer);
     event ModelRated(uint256 modelId, uint8 rating, address rater);
-    
+
     function listModel(string memory name, string memory description, uint256 price) public {
         require(price > 0, "Price must be greater than zero");
         models.push(Model({
@@ -37,7 +37,10 @@ contract AIModelMarketplace {
         require(msg.value == model.price, "Incorrect payment amount");
         require(!hasPurchased[modelId][msg.sender], "Model already purchased");
 
-        model.creator.transfer(msg.value);
+        // Transfer funds using call to ensure compatibility
+        (bool success, ) = model.creator.call{value: msg.value}("");
+        require(success, "Transfer failed");
+        
         hasPurchased[modelId][msg.sender] = true;
         emit ModelPurchased(modelId, msg.sender);
     }
@@ -48,14 +51,22 @@ contract AIModelMarketplace {
         require(rating > 0 && rating <= 5, "Rating must be between 1 and 5");
 
         Model storage model = models[modelId];
-        model.ratingCount++;
-        model.totalRating += rating;
+        
+        // Using unchecked for gas optimization
+        unchecked {
+            model.ratingCount++;
+            model.totalRating += rating;
+        }
 
         emit ModelRated(modelId, rating, msg.sender);
     }
 
     function withdrawFunds() public {
-        payable(msg.sender).transfer(address(this).balance);
+        uint256 contractBalance = address(this).balance;
+
+        // Transfer funds using call
+        (bool success, ) = payable(msg.sender).call{value: contractBalance}("");
+        require(success, "Withdraw failed");
     }
 
     function getModelDetails(uint256 modelId) public view returns (
